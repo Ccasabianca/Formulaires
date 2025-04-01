@@ -4,6 +4,20 @@ import * as yup from "yup";
 import { Form, Button, Container } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 
+const isValidDateAndFuture = (date) => {
+  const [day, month, year] = date.split("/").map(Number);
+  const daysInMonth = new Date(year, month, 0).getDate();
+
+  if (day < 1 || day > daysInMonth || month < 1 || month > 12) {
+    return false;
+  }
+
+  const inputDate = new Date(year, month - 1, day);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return inputDate >= today;
+};
+
 const schema = yup.object().shape({
   name: yup
     .string()
@@ -13,13 +27,9 @@ const schema = yup.object().shape({
   dueDate: yup
     .string()
     .matches(/^\d{2}\/\d{2}\/\d{4}$/, "Format attendu : jj/mm/AAAA")
-    .test("isValidDate", "La date ne peut pas être antérieure à aujourd'hui", (value) => {
+    .test("isValidDateAndFuture", "La date est invalide ou antérieure à aujourd'hui", (value) => {
       if (!value) return false;
-      const [day, month, year] = value.split("/").map(Number);
-      const inputDate = new Date(year, month - 1, day);
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      return inputDate >= today;
+      return isValidDateAndFuture(value);
     })
     .required("La date est requise"),
   priority: yup
