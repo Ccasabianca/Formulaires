@@ -1,6 +1,32 @@
 import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 import { Form, Button, Container } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
+
+const schema = yup.object().shape({
+  name: yup
+    .string()
+    .min(8, "Le nom doit contenir entre 8 et 15 caractères")
+    .max(15, "Le nom doit contenir entre 8 et 15 caractères")
+    .required("Le nom est requis"),
+  dueDate: yup
+    .string()
+    .matches(/^\d{2}\/\d{2}\/\d{4}$/, "Format attendu : jj/mm/AAAA")
+    .test("isValidDate", "La date ne peut pas être antérieure à aujourd'hui", (value) => {
+      if (!value) return false;
+      const [day, month, year] = value.split("/").map(Number);
+      const inputDate = new Date(year, month - 1, day);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      return inputDate >= today;
+    })
+    .required("La date est requise"),
+  priority: yup
+    .string()
+    .oneOf(["Basse", "Moyenne", "Elevée"], "Priorité invalide")
+    .required("La priorité est requise"),
+});
 
 function App() {
   const {
@@ -10,11 +36,11 @@ function App() {
     formState: { errors },
   } = useForm({
     mode: "onBlur",
+    resolver: yupResolver(schema),
     defaultValues: {
       name: "",
       dueDate: "",
       priority: "Basse",
-      isCompleted: false,
     },
   });
 
@@ -29,19 +55,13 @@ function App() {
       <Form onSubmit={handleSubmit(onSubmit)}>
         <Form.Group className="mb-3" controlId="name">
           <Form.Label>Nom</Form.Label>
-          <Form.Control
-            type="text"
-            {...register("name", { required: "Le nom est requis" })}
-          />
+          <Form.Control type="text" {...register("name")} />
           {errors.name && <p className="text-danger">{errors.name.message}</p>}
         </Form.Group>
 
         <Form.Group className="mb-3" controlId="dueDate">
           <Form.Label>Date Due</Form.Label>
-          <Form.Control
-            type="date"
-            {...register("dueDate", { required: "La date est requise" })}
-          />
+          <Form.Control type="text" placeholder="jj/mm/AAAA" {...register("dueDate")} />
           {errors.dueDate && <p className="text-danger">{errors.dueDate.message}</p>}
         </Form.Group>
 
@@ -52,14 +72,7 @@ function App() {
             <option value="Moyenne">Moyenne</option>
             <option value="Elevée">Elevée</option>
           </Form.Select>
-        </Form.Group>
-
-        <Form.Group className="mb-3" controlId="isCompleted">
-          <Form.Check
-            type="checkbox"
-            label="Complété"
-            {...register("isCompleted")}
-          />
+          {errors.priority && <p className="text-danger">{errors.priority.message}</p>}
         </Form.Group>
 
         <Button variant="primary" type="submit">
