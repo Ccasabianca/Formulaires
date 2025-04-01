@@ -8,7 +8,15 @@ function App() {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm({ mode: "onBlur" });
+  } = useForm({
+    mode: "onBlur",
+    defaultValues: {
+      name: "",
+      dueDate: "",
+      priority: "Basse",
+      isCompleted: false,
+    },
+  });
 
   const onSubmit = (data) => {
     console.log("Form Data Submitted:", data);
