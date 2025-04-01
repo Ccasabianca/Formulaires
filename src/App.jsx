@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Form, Button, Container } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-
 function App() {
   const [formData, setFormData] = useState({
     name: "",
@@ -28,7 +27,7 @@ function App() {
     <Container className="mt-5">
       <h2>Formulaire</h2>
       <Form onSubmit={handleSubmit}>
-        <Form.Group className="mb-3">
+        <Form.Group className="mb-3" controlId="name">
           <Form.Label>Nom</Form.Label>
           <Form.Control
             type="text"
@@ -39,7 +38,7 @@ function App() {
           />
         </Form.Group>
 
-        <Form.Group className="mb-3">
+        <Form.Group className="mb-3" controlId="dueDate">
           <Form.Label>Date Due</Form.Label>
           <Form.Control
             type="date"
@@ -50,7 +49,7 @@ function App() {
           />
         </Form.Group>
 
-        <Form.Group className="mb-3">
+        <Form.Group className="mb-3" controlId="priority">
           <Form.Label>Priorité</Form.Label>
           <Form.Select name="priority" value={formData.priority} onChange={handleChange}>
             <option value="Basse">Basse</option>
@@ -59,7 +58,7 @@ function App() {
           </Form.Select>
         </Form.Group>
 
-        <Form.Group className="mb-3">
+        <Form.Group className="mb-3" controlId="isCompleted">
           <Form.Check
             type="checkbox"
             label="Complété"
@@ -69,7 +68,9 @@ function App() {
           />
         </Form.Group>
 
-        <Button variant="primary" type="submit">Soumettre</Button>
+        <Button variant="primary" type="submit">
+          Soumettre
+        </Button>
       </Form>
     </Container>
   );
